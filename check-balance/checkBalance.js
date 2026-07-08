@@ -1,7 +1,17 @@
+require("dotenv").config();
 const { ethers } = require("ethers");
 
-const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.infura.io/v3/2b58c46cb9114e3ab711b8e84d6c402a");
-const signer = new ethers.Wallet("0x4e82201c187f5a2a1303575998c1f9b24c3828358f44a66d4e8d1effd63822db", provider);
+const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
+const METAMASK_PRIVATE_KEY = process.env.METAMASK_PRIVATE_KEY;
+
+if (!INFURA_PROJECT_ID || !METAMASK_PRIVATE_KEY) {
+  throw new Error(
+    "Missing INFURA_PROJECT_ID or METAMASK_PRIVATE_KEY environment variable. Set them in a .env file (see .env.example)."
+  );
+}
+
+const provider = new ethers.providers.JsonRpcProvider(`https://polygon-amoy.infura.io/v3/${INFURA_PROJECT_ID}`);
+const signer = new ethers.Wallet(METAMASK_PRIVATE_KEY, provider);
 
 const IstanbulkartTokenABI = [
   {

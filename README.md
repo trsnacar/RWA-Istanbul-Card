@@ -1,118 +1,127 @@
+# RWA Istanbul Card
 
-# İstanbulkart Tokenizasyonu ve RWA Projesi
+Tokenization of the Istanbul public transit card (Istanbulkart) as a real-world asset (RWA) on the Polygon blockchain, with an on-chain reward program for cardholders. Written in Solidity and built with Hardhat.
 
-Bu proje, İstanbulkart'ı tokenize ederek blockchain teknolojisiyle entegre etmeyi ve gerçek dünya varlıklarını (RWA) dijitalleştirmeyi amaçlamaktadır. Polygon ağı ve Infura kullanılarak oluşturulmuş olup, Solidity ile yazılmış akıllı sözleşmeler içermektedir.
+## Overview
 
-## Özellikler
-- Belirli bir adresin token bakiyesini kontrol etme
-- Token transferi ve onay işlemleri
-- Gerçek dünya varlıklarının dijitalleştirilmesi (RWA)
+This project explores tokenizing the Istanbulkart transit card by representing it as an ERC-20 token on Polygon, and rewarding token holders through a simple, owner-managed reward program.
 
-## Kullanılan Teknolojiler
-- **Blockchain Ağı:** Polygon (Amoy)
-- **Akıllı Sözleşme Dili:** Solidity
-- **Araçlar:** Hardhat, Infura, Ethers.js
+## Smart Contracts
 
-## Projeyi Çalıştırma
+### `IstanbulkartToken.sol`
 
-### Gereksinimler
-- Node.js
-- NPM veya Yarn
-- Metamask cüzdanı
-- Infura hesabı
+A standard ERC-20 token (`IST`) built on OpenZeppelin's `ERC20` implementation.
 
-### Adımlar
+- Mints the full `initialSupply` to the deployer at construction time.
+- Inherits standard ERC-20 functionality: `transfer`, `approve`, `transferFrom`, `balanceOf`, `allowance`, `totalSupply`.
 
-1. **Depoyu Kopyalayın**
-   ```bash
-   git clone https://github.com/kullaniciadi/istanbulkart-tokenizasyonu.git
-   cd istanbulkart-tokenizasyonu
-   ```
+### `RewardProgram.sol`
 
-2. **Bağımlılıkları Yükleyin**
-   ```bash
-   npm install
-   ```
+An `Ownable` contract that lets the contract owner distribute `IstanbulkartToken` rewards to users.
 
-3. **Infura Üzerinden Proje Oluşturun ve API Anahtarınızı Alın**
-   - Infura üzerinden bir proje oluşturun ve proje ID'sini alın.
-   
-4. **Çevre Değişkenlerini Ayarlayın**
-   - Proje dizininde bir `.env` dosyası oluşturun ve aşağıdaki bilgileri ekleyin:
-     ```
-     INFURA_PROJECT_ID=your_infura_project_id
-     METAMASK_PRIVATE_KEY=your_metamask_private_key
-     ```
+- `rewardUser(address user, uint256 amount)` — owner-only; increments the user's cumulative reward balance and transfers tokens to them (via OpenZeppelin `SafeERC20`).
+- `rewards(address)` — public mapping tracking cumulative rewards granted per address.
+- Emits a `RewardGranted` event on every reward.
+- Guards against zero-address recipients/token and zero-amount rewards.
 
-5. **Akıllı Sözleşmeleri Derleyin ve Deploy Edin**
-   ```bash
-   npx hardhat compile
-   npx hardhat run scripts/deploy.js --network amoy
-   ```
+The `RewardProgram` contract must hold a sufficient `IstanbulkartToken` balance (e.g. via a transfer from the token owner) before it can pay out rewards.
 
-6. **Bakiyeleri Kontrol Etmek İçin Scripti Çalıştırın**
-   ```bash
-   node scripts/checkBalance.js
-   ```
+## Tech Stack
 
-## İletişim
-Daha fazla bilgi için benimle iletişime geçmekten çekinmeyin.
+- **Solidity** `0.8.20`
+- **Hardhat** (`@nomicfoundation/hardhat-toolbox`, `hardhat-waffle`, `hardhat-ethers`)
+- **OpenZeppelin Contracts** `^5.0.2`
+- **Ethers.js** `v5`
+- **Polygon Amoy testnet** via **Infura** as the target network
+- **Mocha/Chai** for testing
 
-# Istanbulkart Tokenization and RWA Project
+## Project Structure
 
-This project aims to tokenize Istanbulkart, integrate it with blockchain technology, and digitalize real-world assets (RWA). Built using the Polygon network and Infura, it includes smart contracts written in Solidity.
+```
+contracts/
+  IstanbulkartToken.sol   # ERC-20 token contract
+  RewardProgram.sol       # Owner-managed reward distribution contract
+scripts/
+  deploy.js               # Deployment script (token + reward program)
+check-balance/
+  checkBalance.js         # Standalone script to query a token balance
+test/
+  IstanbulkartToken.test.mjs
+  RewardProgram.test.mjs
+hardhat.config.js
+```
 
-## Features
-- Checking token balance of a specific address
-- Token transfer and approval operations
-- Digitalization of real-world assets (RWA)
+## Prerequisites
 
-## Technologies Used
-- **Blockchain Network:** Polygon (Amoy)
-- **Smart Contract Language:** Solidity
-- **Tools:** Hardhat, Infura, Ethers.js
+- [Node.js](https://nodejs.org/) and npm
+- A MetaMask (or other) wallet with a funded account on Polygon Amoy for deployment
+- An [Infura](https://infura.io/) account and project ID for RPC access to Polygon Amoy
 
-## Running the Project
+## Installation
 
-### Requirements
-- Node.js
-- NPM or Yarn
-- Metamask wallet
-- Infura account
+```bash
+git clone https://github.com/trsnacar/RWA-Istanbul-Card.git
+cd RWA-Istanbul-Card
+npm install
+```
 
-### Steps
+The `check-balance` script has its own `package.json`; install its dependencies separately if you plan to run it:
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/username/istanbulkart-tokenization.git
-   cd istanbulkart-tokenization
-   ```
+```bash
+cd check-balance
+npm install
+```
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+## Environment Variables
 
-3. **Create a Project on Infura and Get Your API Key**
-   - Create a project on Infura and get the project ID.
+Create a `.env` file in the project root (see `.env.example`) with:
 
-4. **Set Up Environment Variables**
-   - Create a `.env` file in the project directory and add the following information:
-     ```
-     INFURA_PROJECT_ID=your_infura_project_id
-     METAMASK_PRIVATE_KEY=your_metamask_private_key
-     ```
+```
+INFURA_PROJECT_ID=your_infura_project_id
+METAMASK_PRIVATE_KEY=your_wallet_private_key
+```
 
-5. **Compile and Deploy Smart Contracts**
-   ```bash
-   npx hardhat compile
-   npx hardhat run scripts/deploy.js --network amoy
-   ```
+> **Security note:** Never commit your `.env` file or a real private key to version control. `.env` is already listed in `.gitignore`. Use a dedicated deployment/testnet wallet, not one holding real funds.
 
-6. **Run the Script to Check Balances**
-   ```bash
-   node scripts/checkBalance.js
-   ```
+## Compiling
 
-## Contact
-Feel free to reach out for more information.
+```bash
+npx hardhat compile
+```
+
+## Testing
+
+```bash
+npx hardhat test
+```
+
+Tests cover basic ERC-20 transfer behavior for `IstanbulkartToken` and reward distribution for `RewardProgram`.
+
+## Deployment
+
+Deploy to the Polygon Amoy testnet (configured in `hardhat.config.js`):
+
+```bash
+npx hardhat run scripts/deploy.js --network amoy
+```
+
+This deploys `IstanbulkartToken` (with an initial supply) followed by `RewardProgram`, wired to the deployed token address.
+
+You can also deploy to a local Hardhat network:
+
+```bash
+npx hardhat node
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+## Checking Balances
+
+`check-balance/checkBalance.js` queries the token balance of a given address using the RPC and key configured via environment variables. Update the `tokenAddress` and target address inside the script as needed, then run:
+
+```bash
+node check-balance/checkBalance.js
+```
+
+## License
+
+This project is licensed under the terms of the [MIT License](LICENSE).

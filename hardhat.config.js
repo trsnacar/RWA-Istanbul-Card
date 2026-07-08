@@ -1,5 +1,9 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
+require("dotenv").config();
+
+const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID || "";
+const METAMASK_PRIVATE_KEY = process.env.METAMASK_PRIVATE_KEY || "";
 
 module.exports = {
   solidity: {
@@ -16,8 +20,8 @@ module.exports = {
       url: "http://127.0.0.1:8545"
     },
     amoy: {
-      url: `https://polygon-amoy.infura.io/v3/2b58c46cb9114e3ab711b8e84d6c402a`,
-      accounts: [`0x4e82201c187f5a2a1303575998c1f9b24c3828358f44a66d4e8d1effd63822db`],
+      url: `https://polygon-amoy.infura.io/v3/${INFURA_PROJECT_ID}`,
+      accounts: METAMASK_PRIVATE_KEY ? [METAMASK_PRIVATE_KEY] : [],
       chainId: 80002
     }
   },
