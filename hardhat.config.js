@@ -1,5 +1,4 @@
-require("@nomiclabs/hardhat-waffle");
-require("@nomiclabs/hardhat-ethers");
+require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID || "";
@@ -24,8 +23,5 @@ module.exports = {
       accounts: METAMASK_PRIVATE_KEY ? [METAMASK_PRIVATE_KEY] : [],
       chainId: 80002
     }
-  },
-  mocha: {
-    require: 'esm'
   }
 };

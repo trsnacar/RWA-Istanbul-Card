@@ -4,11 +4,14 @@ async function main() {
   
     const IstanbulkartToken = await ethers.getContractFactory("IstanbulkartToken");
     const token = await IstanbulkartToken.deploy(1000000);
-    console.log("Token deployed to:", token.address);
-  
+    await token.waitForDeployment();
+    const tokenAddress = await token.getAddress();
+    console.log("Token deployed to:", tokenAddress);
+
     const RewardProgram = await ethers.getContractFactory("RewardProgram");
-    const rewardProgram = await RewardProgram.deploy(token.address);
-    console.log("Reward Program deployed to:", rewardProgram.address);
+    const rewardProgram = await RewardProgram.deploy(tokenAddress);
+    await rewardProgram.waitForDeployment();
+    console.log("Reward Program deployed to:", await rewardProgram.getAddress());
   }
   
   main()

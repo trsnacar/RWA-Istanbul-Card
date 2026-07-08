@@ -1,15 +1,14 @@
-const { ethers } = require("hardhat");
-const { expect } = require("chai");
-const { waffle } = require("ethereum-waffle");
+import hardhat from "hardhat";
+import { expect } from "chai";
 
-chai.use(waffle.solidity);
+const { ethers } = hardhat;
 
 describe("IstanbulkartToken", function () {
   let Token, token, owner, addr1, addr2;
 
   beforeEach(async function () {
     Token = await ethers.getContractFactory("IstanbulkartToken");
-    [owner, addr1, addr2, _] = await ethers.getSigners();
+    [owner, addr1, addr2] = await ethers.getSigners();
 
     token = await Token.deploy(1000000);
   });
